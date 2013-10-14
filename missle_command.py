@@ -4,6 +4,7 @@ from pygame.locals import *
 import math
 import time as _time
 screen_size = (640, 480)
+scale = 4
 color_black = (0,0,0)
 
 
@@ -11,16 +12,19 @@ class Game:
 	def __init__(self):
 		pygame.init()
 		self.display = pygame.display.set_mode(screen_size)
-		pygame.display.set_caption("PyGame testing")
+		pygame.display.set_caption("Missle Command By Brendan Hansen")
 		self.clock = pygame.time.Clock()
 		
-		self.screen = Screen(4)
+		self.tickCount = 0
+
+		self.screen = Screen(scale)
 		self.meteor_trails = []
 		self.meteors = []
-		self.meteors.append(Meteor(0, 0, 640 / 4, 480 / 4))
+		self.meteors.append(Meteor(0, 0, 480 / 4, 480 / 4))
 
 		self.quit = False
 	def update(self):
+		self.tickCount += 1
 		key = pygame.key.get_pressed()
 		for m in self.meteors:
 			m.tick(self)
@@ -121,18 +125,32 @@ class Meteor:
 		a = math.atan2(ty - y, tx - x)
 		self.ax = math.cos(a) * 1
 		self.ay = math.sin(a) * 1
+		self.exploded = False
+		self.r = 3
+		self.alive = True
 		return
 
 	def tick(self, g):
+		if(self.exploded):
+			if(g.tickCount % 4 == 0): self.r += 1
+			if(self.r >= 20): self.alive = False
+			return
 		self.x += self.ax
 		self.y += self.ay
 		l = [int(self.x), int(self.y)]
 		if(l not in g.meteor_trails):
 			g.meteor_trails.append([int(self.x), int(self.y)])
+		
+		if(self.y >= (screen_size[1] - 50) / scale):
+			self.__explode()
+		return
+
+	def __explode(self):
+		self.exploded = True
 		return
 
 	def render(self, screen):
-		screen.draw_circle(int(self.x), int(self.y), 3, 0xffffff)
+		screen.draw_circle(int(self.x), int(self.y), self.r, 0xffffff)
 		return
 
 if __name__ == '__main__':
