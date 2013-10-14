@@ -8,7 +8,6 @@ color_black = (0,0,0)
 
 
 class Game:
-
 	def __init__(self):
 		pygame.init()
 		self.display = pygame.display.set_mode(screen_size)
@@ -42,11 +41,11 @@ class Game:
 
 	def mainLoop(self):
 		lastTime = int(round(_time.time() * 1000000000))
-		nsPerTick = 1000000000.0/30.0
+		nsPerTick = 1000000000.0/20.0
 		delta = 0.0
 		ticks, frames = 0, 0
 		lastTimer = int(round(_time.time() * 1000))
-		
+
 		while not self.quit:
 			now = int(round(_time.time() * 1000000000))
 			delta += (now - lastTime) / nsPerTick
@@ -79,7 +78,6 @@ class Game:
 
 class Screen:
 	def __init__(self, scale):
-		
 		self.width = screen_size[0]
 		self.height = screen_size[1]
 		self.text = pygame.Surface((self.width, self.height))
@@ -128,7 +126,9 @@ class Meteor:
 	def tick(self, g):
 		self.x += self.ax
 		self.y += self.ay
-		g.meteor_trails.append([int(self.x), int(self.y)])
+		l = [int(self.x), int(self.y)]
+		if(l not in g.meteor_trails):
+			g.meteor_trails.append([int(self.x), int(self.y)])
 		return
 
 	def render(self, screen):
